@@ -1,0 +1,125 @@
+syntax = "proto3";
+
+package product.v1;
+
+option go_package = "product-catalog-service/proto/product/v1;productv1";
+
+import "google/protobuf/timestamp.proto";
+
+// ProductService manages product catalog operations
+service ProductService {
+  // Commands
+  rpc CreateProduct(CreateProductRequest) returns (CreateProductReply);
+  rpc UpdateProduct(UpdateProductRequest) returns (UpdateProductReply);
+  rpc ActivateProduct(ActivateProductRequest) returns (ActivateProductReply);
+  rpc DeactivateProduct(DeactivateProductRequest) returns (DeactivateProductReply);
+  rpc ApplyDiscount(ApplyDiscountRequest) returns (ApplyDiscountReply);
+  rpc RemoveDiscount(RemoveDiscountRequest) returns (RemoveDiscountReply);
+
+  // Queries
+  rpc GetProduct(GetProductRequest) returns (GetProductReply);
+  rpc ListProducts(ListProductsRequest) returns (ListProductsReply);
+}
+
+// CreateProduct messages
+// Note: json_name ensures snake_case works in Postman/gRPC JSON (e.g. product_id)
+message CreateProductRequest {
+  string name = 1;
+  string description = 2;
+  string category = 3;
+  int64 price_numerator = 4 [json_name = "price_numerator"];
+  int64 price_denominator = 5 [json_name = "price_denominator"];
+}
+
+message CreateProductReply {
+  string product_id = 1 [json_name = "product_id"];
+}
+
+// UpdateProduct messages
+message UpdateProductRequest {
+  string product_id = 1 [json_name = "product_id"];
+  string name = 2;
+  string description = 3;
+  string category = 4;
+}
+
+message UpdateProductReply {
+  bool success = 1;
+}
+
+// ActivateProduct messages
+message ActivateProductRequest {
+  string product_id = 1 [json_name = "product_id"];
+}
+
+message ActivateProductReply {
+  bool success = 1;
+}
+
+// DeactivateProduct messages
+message DeactivateProductRequest {
+  string product_id = 1 [json_name = "product_id"];
+}
+
+message DeactivateProductReply {
+  bool success = 1;
+}
+
+// ApplyDiscount messages
+message ApplyDiscountRequest {
+  string product_id = 1 [json_name = "product_id"];
+  int32 discount_percent = 2 [json_name = "discount_percent"];
+  google.protobuf.Timestamp start_date = 3 [json_name = "start_date"];
+  google.protobuf.Timestamp end_date = 4 [json_name = "end_date"];
+}
+
+message ApplyDiscountReply {
+  bool success = 1;
+}
+
+// RemoveDiscount messages
+message RemoveDiscountRequest {
+  string product_id = 1 [json_name = "product_id"];
+}
+
+message RemoveDiscountReply {
+  bool success = 1;
+}
+
+// GetProduct messages
+message GetProductRequest {
+  string product_id = 1 [json_name = "product_id"];
+}
+
+message GetProductReply {
+  Product product = 1;
+}
+
+// ListProducts messages
+message ListProductsRequest {
+  string category = 1;
+  string status = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message ListProductsReply {
+  repeated Product products = 1;
+  int32 total = 2;
+}
+
+// Product message
+message Product {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string category = 4;
+  string base_price = 5 [json_name = "base_price"];
+  string effective_price = 6 [json_name = "effective_price"];
+  optional int32 discount_percent = 7 [json_name = "discount_percent"];
+  optional google.protobuf.Timestamp discount_start_date = 8 [json_name = "discount_start_date"];
+  optional google.protobuf.Timestamp discount_end_date = 9 [json_name = "discount_end_date"];
+  string status = 10;
+  google.protobuf.Timestamp created_at = 11 [json_name = "created_at"];
+  google.protobuf.Timestamp updated_at = 12 [json_name = "updated_at"];
+}

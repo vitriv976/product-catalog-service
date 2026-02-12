@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  spanner-emulator:
+    image: gcr.io/cloud-spanner-emulator/emulator
+    ports:
+      - "9010:9010"
+      - "9020:9020"
+    environment:
+      - SPANNER_EMULATOR_HOST=0.0.0.0:9010
+    healthcheck:
+      test: ["CMD", "grpc_health_probe", "-addr=:9010"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
